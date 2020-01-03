@@ -12,5 +12,89 @@ The original paper can be found here: \url{https://arxiv.org/abs/1811.02084}
 \section{Introductionn}
 \begin{itemize}
     \item This paper talks about the new tool released by Google to train exceptionally large models(think models with billions of parameters)
+    \item It has been created for distributed deep learning.
+    \item Helps split your data over processors(generally TPU's) for faster computation.
+    \item It's a layer over TF. 
+\end{itemize}
+\subsection{Do you need it?}
+From the github repo available \url{https://github.com/tensorflow/mesh}, you need it if:
+\begin{itemize}
+    \item The parameters of the model do not fit on one device - e.g. a 5-billion-parameter language model.
+    \item An example is so large that the activations do not fit on one device. - e.g. large 3D image model.
+    \item Lower-latency parallel inference 
+\end{itemize}
+
+\section{Key Ideas}
+\begin{itemize}
+    \item Batch splitting:
+    \begin{itemize}
+        \item Good because small data batches $\implies$ faster training
+        \item Bad because cannot train large models, high latency and inefficient at small batch sizes
+    \end{itemize}
+    \item \textbf{SPMD}: Single-Program-Multiple-Data is a technique to split data and obtain results faster. 
+    \item Mesh-TF graph compiles program to SPMD. This helps implement data-parallel, model-parallel implementations of big networks such as Transformer.
+\end{itemize}
+
+\section{Hardware Assumptions}
+\begin{itemize}
+    \item \textbf{Cluster}: Collection of identical processors with reliable memory  
+    \item \textbf{Mesh}: n-d array of processors. Could be local processors or TPU's. 
+\end{itemize}
+
+\section{SPMD}
+\begin{itemize}
+    \item The main steps in the SPMD algorithm are as follows:
+    \begin{itemize}
+        \item Split data in batches. 
+        \item Send each batch to different processor
+        \item Each processor has it's own copy of the parameters.
+        \item Processor computes forward and backward passes on the data. Returns the gradients.
+        \item Sum the gradients and broadcast results to all processors i.e \textbf{AllReduce}  
+        \item Each processor updates it's copy of params
+    \end{itemize}
+    \item Generally, SPDM splits data across batch dimension.
+    \item Mesh-TF generalizes and let's split by arbitary dimensions.
+\end{itemize}
+\section{Mesh TF}
+\subsection{Similarities}
+\begin{itemize}
+    \item Each tensor is rep by one slice of the it on the processor
+    \item Each op is implemented as one op in the processor. 
+\end{itemize}
+\subsection{Differences}
+\begin{itemize}
+    \item Named dimensions. Allow dimensions to be split the same way for different tensors and ops.
+    \item Mesh also has n-dims
+    \item \textbf{Computation layout}: Mapping from tensor-dim to mesh-dim. Batch splitting will be 
+    \item Current implementation needs tensor-dim to be \textit{evenly divisible} with mesh-dim.
+\end{itemize}
+\section{Functions}
+\begin{itemize}
+    \item Component wise ops
+    \item Reduction
+    \item Einstein summation(einsum in numpy)
+    \item Reshape(requires network connection)
+\end{itemize}
+\section{Syntax}
+\begin{itemize}
+    \item More or less similar to TF.
+    \item Each dimension has a name and shape.
+\end{itemize}
+\section{Experiments}
+\begin{itemize}
+    \item Trained multiple models on mesh tf.
+    \item \textbf{Transformer}: Trained with layout
+    \begin{verbatim}
+        mesh_shape = [("all", n)]
+        computation_layout = [("vocab", "all"), ("d_ff", "all"), ("heads", "all")]
+    \end{verbatim}
+    \item Trained for 10 epochs on 512 core TPUv2 cluster. Best performance on billion-word language modelling benchmark(Perplexity = 23.5)
+    \item On WMT14 En-Fr, 3 epochs. Trained on 128 core TPUv2 cluster. Best ever BLEU score 43.9
+\end{itemize}
+\section{Conclusion}
+\begin{itemize}
+    \item Overall, this paper has explored the SPMD approach to breaking up datasets in smaller chunks and improving computation.
+    \item The concept of named tensors and splitting these tensors in a similar fashion across all processors is a new and interesting concept for me. 
+    \item While the paper has mentioned that this is only for models with billions of parameters, I feel frameworks like these can be used only by the big corps for now. NO ONE can afford a 512 core TPU cluster lol.
 \end{itemize}
 \end{document}
