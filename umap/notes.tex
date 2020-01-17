@@ -1,0 +1,117 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsmath, graphicx, float, blindtext} % for dummy text
+\graphicspath{ {./images/} }
+\title{UMAP: Uniform Manifold Approximaation and Projection for Dimension Reduction}
+\author{Shubham Gupta}
+
+\begin{document}
+\maketitle
+\section{Introduction}
+\begin{itemize}
+    \item Types of dim reduction techniques
+        \begin{itemize}
+            \item Preserve the distance structure within the data. \textit{PCA, MDS, Sammon Mapping} 
+            \item Favor presevation of local distances over global distance. \textit{t-SNE, Isomap, LargeVis, Laplacian eigenmaps, diffusion maps} 
+        \end{itemize}
+    \item Compared to t-SNE, preserves more global structure, better run time performance, scales to larger dataset sizes and no computational restriction on embedding dimension.
+\end{itemize}
+\section{Theoretical foundation}
+\begin{itemize}
+    \item Skipping this in the first read. Will come back to it.
+\end{itemize}
+\section{Computational View of UMAP}
+\begin{itemize}
+    \item Core idea: \textit{Fuzzy simplical sets} which are generalizations of directed graphs, partially ordered sets and categories.
+    \item UMAP basically consists of construction and operations on weighted graphs
+\end{itemize}
+\section{Phases}
+\begin{itemize}
+    \item Two phases
+        \begin{itemize}
+            \item Weigted k-neighbour graph is computed. Theoretical explaination in section 2, which I've not yet read lol.
+            \item Low dimensional layout of this graph is computed
+        \end{itemize}
+\end{itemize}
+\subsection{Graph Construction}
+\begin{itemize}
+    \item 
+\end{itemize}
+\section{Video}
+\begin{itemize}
+    \item Find the "latent" features in the data
+    \item Lot of redundant dimensions. Reducing it can improve algorithms
+    \item Techniques
+        \begin{itemize}
+            \item Matrix factorization
+            \item Neighbour graphs
+        \end{itemize}
+    \item t-SNE is SOTA in neighbour graph algorithms
+\end{itemize}
+\subsection{UMAP}
+\begin{itemize}
+    \item Neighbour graph with maths(lol)
+    \item Topological analysis
+        \begin{itemize}
+            \item \textbf{Simplicies} Combinatorial representations of topological spaces 
+            \item Can use a combination to build multiple complex spaces
+            \item \textbf{Nerve Theorm}: If we build a simplex out of a topological space in a certain way, we can recover all the important topology
+            \item Start by building a cover for the input data i.e open balls on each point.
+            \item Make a simplicial complex using nerve of the cover(not sure if he said nerve)
+            \item If data is uniformly distributed, the cover will be \textit{good} 
+            \item \textbf{Assumption} Data is uniformly distributed on te manifold 
+            \item Define Riemannian metric that makes this assumption true
+            \item Patches of data mapped down to euclidean space on different spaces
+            \item Choose fuzzy cover for the manifold
+            \item \textbf{UMAP Adjunction theorm}: Couldn't understand this bit.  
+            \item \textbf{Assumption } Assume manifold is locally connected i.e it cannot have isolated points
+            \item Why this assumption?
+                \begin{itemize}
+                    \item Increase in dimension, distribution of distances increases
+                    \item Normalize results in tighter bounds i.e no clear distances
+                    \item With local connectivity and normalize, distributions of distances look better.
+                \end{itemize}
+            \item  Local metrics are incompatible
+            \item Parameters $\tau_{\beta, \alpha}$ and $\tau_{\alpha, \beta}$ inform us how to move back and forth between the two projections
+            \item \textbf{Theorm}: Convert everything into fuzzy simplical sets and take the union of these sets to get the final answer
+            \item Combine weights using formula:
+                $f(\alpha, \beta) = \alpha + \beta - \alpha . \beta$ (looks similar to cosine distance rule I think)
+            \item Weight on an edge is the prob the edge exists
+            \item \textbf{Need a low dim rep for this process}  
+            \item Apply the same method to get a fuzzy graph
+            \item We know manifold but don't know correct nearest neighbour distance
+            \item Measure distance between two graphs using cross entropy and optimize
+                \begin{equation}
+                    \begin{split}
+                        CE = \sum_{a \epsilon A} \mu(a)log \frac{\mu(a)}{\nu(a)} + (1 - \mu(a)) log \frac{1-\mu(a)}{1-\nu(a)} 
+                    \end{split}
+                \end{equation}
+            \item First term gets the clumps right similar to t-SNE
+            \item Second term gets the gaps right similar to PCA
+            \item Needs
+                \begin{itemize}
+                    \item Find nearest neighbors fast even with higher dim data
+                    \item \textit{Solution}: RP-trees + NN-descent
+                    \item Optimze the layout subquadratucally
+                    \item \textit{Solution} SGD + negative sampling(similar to word2vec)
+                    \item High level but still fast
+                    \item \textit{Solution} Python + numba
+                \end{itemize}
+        \end{itemize}
+\end{itemize}
+\subsection{Next steps}
+\begin{itemize}
+    \item Embed new unseen points into an existing embedding
+    \item Make use of labels and do supervised dim reduction
+    \item Combine above and do metric learning
+    \item Adding one categorical variable is no harder than adding many others
+    \item Combine spaces with different metrics
+    \item UMAP for pandas dataframes
+    \item Tree sampling paper: Dasgupta +Freund 2018
+\end{itemize}
+\section{Conclusion}
+\begin{itemize}
+    \item Video seems interesting. It's cool to see that UMAP has solid theoritical foundations for how it lowers the dimensionality of data, and that it is not just a visual tool.
+    \item I didn't really understand the math because it was too dense to follow, but maybe reading the paper will give me more insights(specifically section 2 of the paper).
+\end{itemize}
+\end{document}
