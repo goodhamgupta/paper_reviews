@@ -10,9 +10,30 @@
 \section{Introduction}
 \begin{itemize}
     \item This paper review is following the blog from Jay Alammar's blog on the \textbf{Illustrated Transformer}. The blog can be found \href{https://jalammar.github.io/illustrated-transformer/}{here}.  
-\section{Paper}
-\begin{itemize}
-    \item  hello
 \end{itemize}
+\section{Paper Introduction}
+\begin{itemize}
+    \item New architecture based solely on attention mechanisms called \textbf{Transformer}. Gets rids of recurrent and convolution networks completely.  
+    \item Generally, RNN used to seq-to-seq tasks such as translation, language modelling, etc.
+    \item Transformer allows for significant parallelization and relies only on attention.
+\end{itemize}
+\section{Background}
+\begin{itemize}
+    \item \textit{Self attention} Attention to different positions of a sequence in order to compute a representation of the sequence.
+\end{itemize}
+\section{Model Architecture}
+\begin{itemize}
+    \item Transformer uses the following:
+    \begin{itemize}
+        \item Encoder decode mechanism
+        \item Stacked self attention
+        \item Point wise fully connected layer for encoder and decoder
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{transformer}
+        \caption{transformer}
+        \label{fig:transformer}
+    \end{figure}
 \end{itemize}
 \end{document}
