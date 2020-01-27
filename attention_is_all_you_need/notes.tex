@@ -36,4 +36,16 @@
         \label{fig:transformer}
     \end{figure}
 \end{itemize}
+\subsection{Encoder and decoder stacks}
+\begin{itemize}
+    \item \textbf{Encoder}: 6 identical layers. 2 sub layers per layer
+    \item \textit{First}: multi-head self attention mechanism
+    \item \textit{Second}: Fully connected feed forward network
+    \item Apply residual connection for each of the two laters
+    \item Apply layer normalization
+    \item \textbf{Decoder}: 6 identical layers. 2 sub layers as above + 1 more which performs multi-head attention over output of encoder stack 
+    \item Resodual locks around all 3 sub layers
+    \item Layer normalization
+    \item Modify self-attention sub layer to prevent positions from attending to subsequent positions. Ensures that \textit{i} output depends only on words before \textit{i}.
+\end{itemize}
 \end{document}
