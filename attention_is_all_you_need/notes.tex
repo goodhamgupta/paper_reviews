@@ -48,4 +48,10 @@
     \item Layer normalization
     \item Modify self-attention sub layer to prevent positions from attending to subsequent positions. Ensures that \textit{i} output depends only on words before \textit{i}.
 \end{itemize}
+\subsection{Attention}
+\begin{itemize}
+    \item 3 vectors: Query(Q), Key(K) and Value(V)
+    \item Output = Weighted sum of values. Weights assigned as a function of query with key.
+    \item Scaled dot-product attention and multi-head attention
+\end{itemize}
 \end{document}
