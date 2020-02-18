@@ -11,15 +11,51 @@
 \begin{itemize}
     \item This is a new paper which explores the limits of using their new T5 model in a context-free QA domain.
     \item As with the T5 model itself, it is very interesting to see these one-model-to-rule-them-all architectures as they exhibit some form of generalization.
-    \item I found this paper from Adam's Roberts twitter thread which is available \href{https://twitter.com/ada_rob/status/1227062195671822336}{here} 
+    \item I found this paper from Adam Roberts twitter thread which is available \href{https://twitter.com/ada_rob/status/1227062195671822336}{here} 
     \item \textbf{Core Idea}: This paper will test two main things:
-    \begin{itemize}
-        \item How well does the model create a knowledge base such that it can answer questions just based on this base and no other information.
-        \item Do model with more parameters store more information? Measuring knowledge retreiving ability is used to check this point.
-    \end{itemize}
+        \begin{itemize}
+            \item How well does the model create a knowledge base such that it can answer questions just based on this base and no other information.
+            \item Do model with more parameters store more information? Measuring knowledge retreiving ability is used to check this point.
+        \end{itemize}
 \end{itemize}
-\section{Paper Introduction}
+\section{Paper Points}
 \begin{itemize}
-    \item 
+    \item \textbf{Reading Comprehension}: Given a question and context, lookup and give the answer.
+    \item \textbf{Open domain question answering}: Random context-independent questions. It is given entire context(all the information possible in the world) and the model is expected to deduce the answer. \textit{Open book} exam.
+    \item Here, problem is similar to open book exam + no context given at all. Model should retreive info from parameters and return the values. \textit{Closed book} exam.
+    \item T5: Treat every NLP task as text-to-text problem using encoder decoder Transformer.
+    \item For natural questions dataset, evaluation is done as follows: 
+    \item First method:
+        \begin{itemize}
+            \item Ignore all "unanswerable" and "long answer" type questions.
+            \item model trained to output single answer
+            \item Questions with answers longer than 5 tokens are ignored
+            \item Answers normalized before comparsion
+            \item Answer is correct if it matches any of the annotated answers
+        \end{itemize}
+    \item Second method:
+        \begin{itemize}
+            \item Considered correct only if model predicts \textit{all} the answers correctly
+        \end{itemize}
+    \item For fine tuning, use AdaFactor Optimizer(need to read more about this one)
+\end{itemize}
+\section{Results}
+\begin{itemize}
+    \item SOTA on Natural Questions(NQ) and WebQuestions(WQ) dataset. Worst performance on TriviaQA(TQA).
+    \item Performance increases with model size.
+    \item Guu et all(2020) performs better than T5 on NQ and WQ. Need to read this paper as well. It 
+    \begin{itemize}
+        \item Retreives Revevant documents
+        \item Answers questions in end-to-end fashion
+    \end{itemize}
+    \item Closed-book model seem to perform on par with open-book models, leading to new research directions.
+    \item For multiple answer type questions, T5 lower than SOTA BUT much better than baseline that was published with the paper. Therefore, T5 can perform well on these types of questions as well.
+\end{itemize}
+\section{Shortcoming}
+\begin{itemize}
+    \item Model is far too expensive to train.
+    \item Open-book models provide some indication of what information was used to answer the problem. HOWEVER, T5 just has a distribution over parameters that cannot be interpreted.
+    \item MLE does not gurantee the model will learn a fact. Therefore, difficult to ensure the model learns specific information during pre-training
+    \item Measure and improve performance on difficult QA tasks like DROP, which needs reasoning ability.
 \end{itemize}
 \end{document}
