@@ -94,4 +94,43 @@
     \item \textit{Solution}: Async refresh $Embed_{doc}$ every 500 steps
     \item Use MIPS to select top $k$ docs. For these docs, recompute $p(z|x)$ using new $\theta$.
 \end{itemize}
+\subsubsection{Implementing async MIPS refreshes}
+\begin{itemize}
+    \item Two jobs running in parallel:
+    \begin{itemize}
+        \item \textit{Primary trainer}: Perform gradient updates on parameters
+        \item \textit{Secondary index builder}: Embeds and indexes the docs
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\textwidth]{async_mips}
+            \caption{Async MIPS implementation}
+            \label{fig:async_mips}
+        \end{figure}
+        \item Async refresh used only for pre-training
+        \item For fine tuning, build index once from pre-trained $\theta$ and use it.
+    \end{itemize}
+\end{itemize}
+\subsubsection{What does retriever learn?}
+\begin{itemize}
+    \item Retriever promotes docs that improve accuracy
+    \item This can be analyzed by analyzing gradient wrt the parameters
+\end{itemize}
+\subsubsection{Injecting inductive biases into pre-trianing}
+\begin{itemize}
+    \item \textbf{Salient span masking}: Some questions require only local context. Select named entities and dates and mask one of them. Performs better. 
+    \item \textbf{Null document}: Add null document to top $k$ documents to allow answers even when no context is required 
+    \item \textbf{Prohibiting trivial retrievals}: If knowledge corpus $Z$ is the same as pre-training corpus $X$, it can predict $y$ by looking at $x$ in $z$. Exclude trivial candidate
+    \item \textbf{Initialization}: Warm up $Embed_{input}$ and $Embed_{doc}$ using Inverse Cloze Task(ICT) i.e model trained to retrieve the doc where the sentence came from.  
+\end{itemize}
+\section{Experiments}
+\begin{itemize}
+    \item REALM outperforms all approaches by a big margin.
+    \item Not adding results here for now.
+\end{itemize}
+\section{Future Work}
+\begin{itemize}
+    \item Structured knowledge where we learn entities which are informative
+    \item Multi lingual setting. Retreiving knowledge in high resource language to better represent text in low resource language
+    \item Multi model setting. Retrieve images or videos that can provide knowledge not present in text
+\end{itemize}
 \end{document}
