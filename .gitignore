@@ -285,3 +285,4 @@ TSWLatexianTemp*
 *.zip
 *.npy
 *.pickle
+.DS_Store
